@@ -4,7 +4,12 @@ import { sendMessage } from "./api/chat";
 
 function App() {
   const [input, setInput] = useState("");
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState([
+    {
+      role: "assistant",
+      content: "Hi there! 👋 I'm the Mind Global Assistant. How can I help you today?",
+    }
+  ]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
 
