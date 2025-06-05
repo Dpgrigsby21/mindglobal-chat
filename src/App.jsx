@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { sendMessage } from "./api/chat";
 
 function App() {
@@ -18,14 +19,19 @@ function App() {
 
     const reply = await sendMessage(input);
     const assistantMessage = { role: "assistant", content: reply };
-
-    setHistory((h) => [...h, assistantMessage]);
+    setHistory([...newHistory, assistantMessage]);
     setIsTyping(false);
   };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [history, isTyping]);
+
+  // ✅ Eliminate spacing between paragraphs and list items
+  const markdownComponents = {
+    p: ({ children }) => <p style={{ margin: 0 }}>{children}</p>,
+    li: ({ children }) => <li style={{ margin: 0 }}>{children}</li>,
+  };
 
   return (
     <div style={styles.container}>
@@ -48,7 +54,9 @@ function App() {
                   : styles.assistantBubble),
               }}
             >
-              {msg.content}
+              <ReactMarkdown components={markdownComponents}>
+                {msg.content}
+              </ReactMarkdown>
             </div>
           </div>
         ))}
@@ -106,7 +114,7 @@ const styles = {
   },
   message: {
     display: "flex",
-    marginBottom: "1rem",
+    marginBottom: "0.5rem",
   },
   user: {
     justifyContent: "flex-end",
@@ -115,12 +123,13 @@ const styles = {
     justifyContent: "flex-start",
   },
   bubble: {
-    maxWidth: "75%",
-    padding: "10px 14px",
+    maxWidth: "70%",
+    padding: "4px 10px",
     borderRadius: "16px",
     fontSize: "0.95rem",
-    lineHeight: "1.4",
+    lineHeight: "1.25",
     wordWrap: "break-word",
+    whiteSpace: "pre-wrap",
   },
   userBubble: {
     backgroundColor: "#007bff",
