@@ -7,26 +7,34 @@ function App() {
   const [history, setHistory] = useState([
     {
       role: "assistant",
-      content: "Hi there! 👋 I'm the Mind Global Assistant. How can I help you today?",
+      content: "Hi there! 👋 I'm the MindGlobal Assistant. How can I help you today?",
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+const handleSend = async () => {
+  if (!input.trim()) return;
 
-    const userMessage = { role: "user", content: input };
-    const newHistory = [...history, userMessage];
-    setHistory(newHistory);
-    setInput("");
-    setIsTyping(true);
+  const userMessage = { role: "user", content: input };
+  const newHistory = [...history, userMessage];
+  setHistory(newHistory);
+  setInput("");
+  setIsTyping(true);
 
-    const reply = await sendMessage(input);
-    const assistantMessage = { role: "assistant", content: reply };
-    setHistory([...newHistory, assistantMessage]);
-    setIsTyping(false);
-  };
+  const rawReply = await sendMessage(input);
+
+  // ✅ Clean all known citation formats
+const cleanedReply = rawReply
+  .replace(/\[\d+\]/g, "")                  // [1], [2]
+  .replace(/【.*?†.*?】/g, "")              // removes  
+  .replace(/\(\d+\)/g, "")                  // (1), (2)
+  .replace(/<sup>.*?<\/sup>/gi, "");        // future HTML-style citations
+
+  const assistantMessage = { role: "assistant", content: cleanedReply };
+  setHistory((h) => [...h, assistantMessage]);
+  setIsTyping(false);
+};
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,7 +48,7 @@ function App() {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>💬 Mind Global AI Assistant</h2>
+      <h2 style={styles.header}>💬 MindGlobal AI Assistant</h2>
 
       <div style={styles.chatBox}>
         {history.map((msg, index) => (
