@@ -48,7 +48,7 @@ const cleanedReply = rawReply
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>💬 MindGlobal AI Assistant</h2>
+      <h2 style={styles.header}>💬 Mindglobal AI Assistant</h2>
 
       <div style={styles.chatBox}>
         {history.map((msg, index) => (
