@@ -7,7 +7,7 @@ function App() {
   const [history, setHistory] = useState([
     {
       role: "assistant",
-      content: "Hi there! 👋 I'm the MindGlobal Assistant. How can I help you today?",
+      content: "Hi there! 👋 I'm the Mindglobal Assistant. How can I help you today?",
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
