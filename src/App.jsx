@@ -7,43 +7,57 @@ function App() {
   const [history, setHistory] = useState([
     {
       role: "assistant",
-      content: "Hi there! 👋 I'm the Mindglobal Assistant. How can I help you today?",
-    }
+      content: "Hi there! 👋 I'm the MindGlobal Assistant. How can I help you today?",
+    },
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
 
-const handleSend = async () => {
-  if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim()) return;
 
-  const userMessage = { role: "user", content: input };
-  const newHistory = [...history, userMessage];
-  setHistory(newHistory);
-  setInput("");
-  setIsTyping(true);
+    const userMessage = { role: "user", content: input };
+    const newHistory = [...history, userMessage];
+    setHistory(newHistory);
+    setInput("");
+    setIsTyping(true);
 
-  const rawReply = await sendMessage(input);
+    const rawReply = await sendMessage(input);
 
-  // ✅ Clean all known citation formats
-const cleanedReply = rawReply
-  .replace(/\[\d+\]/g, "")                  // [1], [2]
-  .replace(/【.*?†.*?】/g, "")              // removes  
-  .replace(/\(\d+\)/g, "")                  // (1), (2)
-  .replace(/<sup>.*?<\/sup>/gi, "");        // future HTML-style citations
+    const cleanedReply = rawReply
+      .replace(/\[\d+\]/g, "")                 // [1], [2]
+      .replace(/【.*?†.*?】/g, "")             // 【source†type】
+      .replace(/\(\d+\)/g, "")                // (1), (2)
+      .replace(/<sup>.*?<\/sup>/gi, "")       // <sup>1</sup>
+      .replace(/\n{3,}/g, "\n\n");            // Collapse triple newlines
 
-  const assistantMessage = { role: "assistant", content: cleanedReply };
-  setHistory((h) => [...h, assistantMessage]);
-  setIsTyping(false);
-};
+    const assistantMessage = { role: "assistant", content: cleanedReply };
+    setHistory((h) => [...h, assistantMessage]);
+    setIsTyping(false);
+  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [history, isTyping]);
 
-  // ✅ Eliminate spacing between paragraphs and list items
+  // Clean markdown spacing — no <p> in <li>, compact layout
   const markdownComponents = {
-    p: ({ children }) => <p style={{ margin: 0 }}>{children}</p>,
-    li: ({ children }) => <li style={{ margin: 0 }}>{children}</li>,
+    p: ({ children, node }) => {
+      const parentTag = node?.parent?.tagName;
+      if (parentTag === "li") {
+        return <>{children}</>; // Avoid <p> inside <li>
+      }
+      return <p style={{ margin: 0 }}>{children}</p>;
+    },
+    li: ({ children }) => (
+      <li style={{ margin: "0 0 4px 0", padding: 0 }}>{children}</li>
+    ),
+    ol: ({ children }) => (
+      <ol style={{ paddingLeft: "1.25rem", margin: 0 }}>{children}</ol>
+    ),
+    ul: ({ children }) => (
+      <ul style={{ paddingLeft: "1.25rem", margin: 0 }}>{children}</ul>
+    ),
   };
 
   return (
