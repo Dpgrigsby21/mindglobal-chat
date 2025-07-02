@@ -7,7 +7,7 @@ function App() {
   const [history, setHistory] = useState([
     {
       role: "assistant",
-      content: "Hi there! 👋 I'm the MindGlobal Assistant. How can I help you today?",
+      content: "Hi there! 👋 I'm the Mindglobal Assistant. How can I help you today? (V2)",
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
@@ -62,7 +62,7 @@ function App() {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>💬 MindGlobal AI Assistant</h2>
+      <h2 style={styles.header}>💬 Mindglobal AI Assistant</h2>
 
       <div style={styles.chatBox}>
         {history.map((msg, index) => (
